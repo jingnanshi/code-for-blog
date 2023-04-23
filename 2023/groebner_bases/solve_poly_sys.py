@@ -81,8 +81,7 @@ def solve_poly_system(F, *gens):
     SymPy License: https://github.com/sympy/sympy/blob/master/LICENSE
     """
     result = solve_poly_system_recursive(F, gens, entry=True)
-    
-    return
+    return sorted(result , key=sp.default_sort_key)
 
 if __name__ == "__main__":
     # polynomials to test
@@ -92,9 +91,10 @@ if __name__ == "__main__":
     g_basis_sympy = sp.groebner(F, x, y, z, order="lex")
     print(f"Groebner's basis (SymPy): {g_basis_sympy}")
 
+    solution = solve_poly_system(F, x, y, z)
+    print(f"Poly Sols: {solution}")
+
     solution_sympy = sp.solve_poly_system(F, x, y, z)
     print(f"Poly Sols (SymPy): {solution_sympy}")
-
-    solve_poly_system(F, x, y, z)
 
 
