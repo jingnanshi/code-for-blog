@@ -46,15 +46,11 @@ def groebner(F, *gens):
  
     # sort
     # courtesy of SymPy buchberger implementation
-    G_reduced = [sp.polys.polytools.poly_from_expr(x, domain=sp.QQ)[0] for x in G_reduced]
-    ring = sp.ring(gens, domain=sp.QQ)[0]
-    temp = [ring.from_dict(poly.rep.to_dict()) for poly in G_reduced if poly]
-    breakpoint()
-    G = sorted(temp, key=lambda f: ring.order(f.LM), reverse=True)
-
-    breakpoint()
-    
-    return [x.monic() for x in G_reduced]
+    polys, opt = sp.parallel_poly_from_expr(G_reduced, *gens)
+    ring = sp.polys.rings.PolyRing(gens, domain=sp.QQ)
+    polys = [ring.from_dict(poly.rep.to_dict()) for poly in polys if poly]
+    G_reduced = sorted(polys, key=lambda f: f.LM, reverse=True)
+    return [x.monic().as_expr() for x in G_reduced]
 
 
 if __name__ == "__main__":
