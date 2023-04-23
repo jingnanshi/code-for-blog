@@ -11,7 +11,7 @@ def s_poly(f, g):
     return s
 
 
-def buchberger(F, *gens, domain=sp.QQ):
+def buchberger(F):
     """Buchberger's Algorithm
     Note that this is slightly different from the pesudocode
     provided in Cox et. al. 2015.
@@ -35,7 +35,7 @@ def groebner(F, *gens):
     Use the default lex order.
     """
     # buchberger
-    G = buchberger(F, *gens, domain=sp.QQ)
+    G = buchberger(F)
 
     # reduce
     G_reduced = []
@@ -47,10 +47,10 @@ def groebner(F, *gens):
     # sort
     # courtesy of SymPy buchberger implementation
     polys, opt = sp.parallel_poly_from_expr(G_reduced, *gens)
-    ring = sp.polys.rings.PolyRing(gens, domain=sp.QQ)
+    ring = sp.polys.rings.PolyRing(gens, domain=polys[0].domain)
     polys = [ring.from_dict(poly.rep.to_dict()) for poly in polys if poly]
     G_reduced = sorted(polys, key=lambda f: f.LM, reverse=True)
-    return [x.monic().as_expr() for x in G_reduced]
+    return sp.parallel_poly_from_expr([x.monic().as_expr() for x in G_reduced], *gens)[0]
 
 
 if __name__ == "__main__":
