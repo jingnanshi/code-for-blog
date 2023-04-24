@@ -16,7 +16,6 @@ def buchberger(F, *gens):
     Note that this is slightly different from the pesudocode
     provided in Cox et. al. 2015.
     """
-    #print("=============BUCHBERGER=================")
     G = copy.deepcopy(F)
     pqs = set(itertools.combinations(G, 2))
     while pqs:

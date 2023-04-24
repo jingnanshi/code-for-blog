@@ -32,14 +32,14 @@ def solve_poly_system_recursive(F, gens, entry=False):
             return None
 
     if len(basis) < len(gens):
-        raise ValueError("Potentially infinite solutions.")
+        raise ValueError("System not zero-dimensional.")
 
     univar = [x for x in basis if is_univariate(x)]
 
     if len(univar) == 1:
         f = univar.pop()
     else:
-        raise ValueError("Potentially infinite solutions.")
+        raise ValueError("System not zero-dimensional.")
 
     # find solutions for the univariate element
     gens = f.gens
@@ -71,6 +71,9 @@ def solve_poly_system_recursive(F, gens, entry=False):
         new_system = sp.parallel_poly_from_expr(new_system, *new_gens)[0]
         for solution in solve_poly_system_recursive(new_system, new_gens):
             solutions.append(solution + (zero,))
+    
+    if solutions and len(solutions[0]) != len(gens):
+        raise ValueError("System not zero-dimensional.")
 
     return solutions
 
@@ -85,16 +88,20 @@ def solve_poly_system(F, *gens):
 
 if __name__ == "__main__":
     # polynomials to test
-    F = [x**2 + y + z, x + y**2 + z, x + y + z**2]
+    F = [x**2 + y + z - 1, x + y**2 + z - 1, x + y + z**2 - 1]
     F = list(map(lambda x : sp.Poly(x), F))
+
+    g_basis = groebner(F, x, y, z)
+    print(f"Groebner's basis: {g_basis}")
 
     g_basis_sympy = sp.groebner(F, x, y, z, order="lex")
     print(f"Groebner's basis (SymPy): {g_basis_sympy}")
 
+    solution_sympy = sp.solve_poly_system(F, x, y, z)
+    print(f"Poly Sols (SymPy): {solution_sympy}")
+
     solution = solve_poly_system(F, x, y, z)
     print(f"Poly Sols: {solution}")
 
-    solution_sympy = sp.solve_poly_system(F, x, y, z)
-    print(f"Poly Sols (SymPy): {solution_sympy}")
 
 
